@@ -1,0 +1,76 @@
+-- UNDERSTANDING THE DATA
+SELECT * FROM hr_attrition;
+
+-- Relation between salary and job satisfaction
+SELECT
+JobSatisfaction,
+AVG(MonthlyIncome) as 'Attrition AVG Income'
+FROM hr_attrition
+WHERE Attrition = 'Yes'
+GROUP BY JobSatisfaction;
+
+SELECT
+JobSatisfaction,
+AVG(MonthlyIncome) as 'NO Attrition AVG Income'
+FROM hr_attrition
+WHERE Attrition = 'No'
+GROUP BY JobSatisfaction;
+
+-- ONLY ATTRITION
+SELECT *
+FROM hr_attrition
+WHERE Attrition = 'Yes';
+
+--DEMOGRAPHICS
+SELECT
+Age,
+DistanceFromHome,
+MonthlyIncome,
+MaritalStatus,
+JobSatisfaction,
+JobInvolvement
+FROM hr_attrition
+WHERE Attrition = 'Yes'
+ORDER BY MonthlyIncome;
+
+--JOB ROLE ATTRITION
+SELECT
+JobRole,
+COUNT(*),
+COUNT(*) * 100/ SUM(COUNT(*)) OVER() as percent
+FROM hr_attrition
+WHERE Attrition = 'Yes'
+GROUP BY JobRole;
+
+-- YEAR 1 ATTRITION 
+SELECT
+TotalWorkingYears,
+COUNT(*)
+FROM (
+    SELECT *
+    FROM hr_attrition
+    WHERE Attrition = 'Yes'
+) a
+GROUP BY TotalWorkingYears
+ORDER BY 2 DESC;
+
+
+--ATTRITION RATE USING OVER()
+SELECT
+Attrition,
+COUNT(Attrition),
+COUNT(*) * 100 / SUM(COUNT(*)) OVER() as percentage_gameplay
+FROM hr_attrition
+GROUP BY Attrition;
+
+-- USING SUBQUERY
+SELECT
+Attrition,
+COUNT(Attrition),
+ROUND(
+    COUNT(Attrition)*100 / (SELECT COUNT(Attrition) FROM hr_attrition),
+    2
+) as percent_total
+FROM hr_attrition
+GROUP BY Attrition
+WITH ROLLUP;
